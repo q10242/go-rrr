@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"go-rrr/pkg/config"
 	"go-rrr/pkg/utils"
-	"time"
-
+	"math/rand"
 	"net/url"
+	"time"
 
 	"github.com/jinzhu/gorm"
 )
@@ -26,22 +26,24 @@ func init() {
 	db = config.GetDB()
 	db.AutoMigrate(&Redirect{})
 }
-func (r *Redirect) CreateRedirect() *Redirect {
+func (r *Redirect) CreateRedirect() (*Redirect, error) {
 	db.NewRecord(r)
 	OriginUrl, err := url.ParseRequestURI(r.OriginUrl)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	r.OriginUrl = OriginUrl.String()
 	ShortString := randStringFinder()
 	r.ShortUrl = ShortString
 	db.Create(&r)
-	return r
+	return r, nil
 }
 func GetRedirectByShortUrl(ShortUrl string) (*Redirect, *gorm.DB) {
-
 	var getRedirect Redirect
 	db := db.Where("short_url=?", ShortUrl).Find(&getRedirect)
+	if RedirectToRicRoll(int(getRedirect.Probability)) {
+		getRedirect.OriginUrl = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+	}
 	return &getRedirect, db
 }
 
@@ -69,4 +71,8 @@ func Clean() {
 	var delRedirect Redirect
 	db.Where("updated_at < ?", lastMounth).Unscoped().Delete(&delRedirect)
 	fmt.Println("Cleaned records over 1 mounth")
+}
+
+func RedirectToRicRoll(Rate int) bool {
+	return Rate >= rand.Intn(99)
 }

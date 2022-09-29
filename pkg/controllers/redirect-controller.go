@@ -2,13 +2,11 @@ package controllers
 
 import (
 	"encoding/json"
-
-	"github.com/gorilla/mux"
-
-	"net/http"
-
 	"go-rrr/pkg/models"
 	"go-rrr/pkg/utils"
+	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 func GetRedirectById(w http.ResponseWriter, r *http.Request) {
@@ -25,8 +23,16 @@ func GetRedirectById(w http.ResponseWriter, r *http.Request) {
 func CreateRedirect(w http.ResponseWriter, r *http.Request) {
 	CreateRedirect := &models.Redirect{}
 	utils.ParseBody(r, CreateRedirect)
-	b := CreateRedirect.CreateRedirect()
-	res, _ := json.Marshal(b)
-	w.WriteHeader(http.StatusOK)
-	w.Write(res)
+	b, err := CreateRedirect.CreateRedirect()
+	if nil != err {
+		res, _ := json.Marshal(map[string]string{
+			"message": "This is not an regular url.",
+		})
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write(res)
+	} else {
+		res, _ := json.Marshal(b)
+		w.WriteHeader(http.StatusOK)
+		w.Write(res)
+	}
 }
