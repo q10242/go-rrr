@@ -74,5 +74,6 @@ func Clean() {
 }
 
 func RedirectToRicRoll(Rate int) bool {
-	return Rate >= rand.Intn(99)
+	result := rand.Intn(99)
+	return Rate >= result
 }
