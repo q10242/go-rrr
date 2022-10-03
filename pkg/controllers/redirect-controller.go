@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"go-rrr/pkg/models"
 	"go-rrr/pkg/utils"
 	"net/http"
@@ -24,7 +25,7 @@ func GetRedirectById(w http.ResponseWriter, r *http.Request) {
 func CreateRedirect(w http.ResponseWriter, r *http.Request) {
 	CreateRedirect := &models.Redirect{}
 	utils.ParseBody(r, CreateRedirect)
-
+	fmt.Println(CreateRedirect.Probability)
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
 	b, err := CreateRedirect.CreateRedirect()

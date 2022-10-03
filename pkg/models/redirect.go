@@ -17,7 +17,7 @@ type Redirect struct {
 	gorm.Model
 	OriginUrl   string `gorm: ""json:"originUrl"`
 	ShortUrl    string `json: shortUrl"`
-	Probability int16  `json: "probability"`
+	Probability int    `json: "probability"`
 }
 
 func init() {
@@ -28,6 +28,8 @@ func init() {
 }
 func (r *Redirect) CreateRedirect() (*Redirect, error) {
 	db.NewRecord(r)
+	fmt.Println(r)
+
 	OriginUrl, err := url.ParseRequestURI(r.OriginUrl)
 	if err != nil {
 		return nil, err
